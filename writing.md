@@ -14,6 +14,7 @@ $$ \frac{y_i}{f} = \frac{y_o}{z_o} $$
 where $x_0 = x_c+r_0\cos\theta, y_0 = y_c+r_0\sin\theta$.
 
 Thus, 
+
 $$ x_i = \frac{fx_0}{z_0} $$
 
 $$ y_i = \frac{fy_0}{z_0} $$
