@@ -1,8 +1,8 @@
-# Computer Vision Homework 1 Written Assignment
+# Homework 1 Written Assignment
 
 ## 1)
 
-### a
+### a.
 Still circular.
 
 Let $(x_c+r_0\cos\theta,y_c+r_0\sin\theta,z_0)$ be a point on the edge of the disk. We have 
@@ -19,9 +19,13 @@ $$ x_i = \frac{fx_0}{z_0} $$
 
 $$ y_i = \frac{fy_0}{z_0} $$
 
-Then $(x_i-\frac{fx_c}{z_0})^2 + (y_i-\frac{fy_c}{z_0})^2 = \frac{f^2r_0^2}{z_0^2}$.Therefore, the shape is still circular.
+Then 
 
-### b
+$$(x_i-\frac{fx_c}{z_0})^2 + (y_i-\frac{fy_c}{z_0})^2 = \frac{f^2r_0^2}{z_0^2}$$
+
+The shape is still circular.
+
+### b.
 (i) 
 
 Consider the simple case where A=C=D=0 and B=1. 
@@ -51,6 +55,8 @@ $$ y_i = 0 \quad y_i' = 0 $$
 Let $t \to \infty$, we have
 
 $$x_{vp} = f\frac{l_x}{l_z} \quad y_{vp} = 0 $$
+
+Therefore, the vanishing points lie on the line $y=0$.
 
 (ii)
 
@@ -82,7 +88,9 @@ Let $t \to \infty$, we have
 
 $$x_{vp} = 0 \quad y_{vp} = f\frac{l_y}{l_z} $$
 
-(iii)
+Therefore, the vanishing points lie on the line $x=0$.
+
+### c.
 
 Now consider the general case. The orientation vector can be expressed as $(l_x,l_y,l_z)$, which satisfies 
 
