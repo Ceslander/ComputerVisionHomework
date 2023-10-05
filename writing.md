@@ -78,3 +78,5 @@ $$ y_i = f\frac{y_o+l_yt}{z_o+l_zt} \quad y_i' = f\frac{y_o'+l_yt}{z_o'+l_zt} $$
 Let $t \to \infty$, we have
 
 $$x_{vp} = 0 \quad y_{vp} = f\frac{l_y}{l_z} $$
+
+(iii)
