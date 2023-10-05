@@ -31,18 +31,19 @@ The orientation vector can be expressed as $(l_x,0,l_z)$.
 We can write the two straight lines as
 
 $$\begin{cases}
-    x &= x_o + l_xt\\
-    y &= 0\\
-    z &= z_o + l_zt
+    x = x_o + l_xt\\
+    y = 0\\
+    z = z_o + l_zt
 \end{cases}
 \quad
 \begin{cases}
-    x &= x_o' + l_xt\\
-    y &= 0\\
-    z &= z_o' + l_zt
+    x = x_o' + l_xt\\
+    y = 0\\
+    z = z_o' + l_zt
 \end{cases}$$
 
 The points projected on the image plane are
+
 $$ x_i = f\frac{x_o+l_xt}{z_o+l_zt} \quad x_i' = f\frac{x_o'+l_xt}{z_o'+l_zt} $$
 
 $$ y_i = 0 \quad y_i' = 0 $$
@@ -60,18 +61,19 @@ The orientation vector can be expressed as $(0,l_y,l_z)$.
 We can write the two straight lines as
 
 $$\begin{cases}
-    x &= 0\\
-    y &= y_o + l_yt\\
-    z &= z_o + l_zt
+    x = 0\\
+    y = y_o + l_yt\\
+    z = z_o + l_zt
 \end{cases}
 \quad
 \begin{cases}
-    x &= 0\\
-    y &= y_o' + l_yt\\
-    z &= z_o' + l_zt
+    x = 0\\
+    y = y_o' + l_yt\\
+    z = z_o' + l_zt
 \end{cases}$$
 
 The points projected on the image plane are
+
 $$ x_i = 0 \quad x_i' = 0 $$
 
 $$ y_i = f\frac{y_o+l_yt}{z_o+l_zt} \quad y_i' = f\frac{y_o'+l_yt}{z_o'+l_zt} $$
@@ -81,3 +83,40 @@ Let $t \to \infty$, we have
 $$x_{vp} = 0 \quad y_{vp} = f\frac{l_y}{l_z} $$
 
 (iii)
+
+Now consider the general case. The orientation vector can be expressed as $(l_x,l_y,l_z)$, which satisfies 
+
+$$Al_x+Bl_y+Cl_z=0$$
+
+Two parallel lines are
+
+$$\begin{cases}
+    x = x_o + l_xt\\
+    y = y_o + l_yt\\
+    z = z_o + l_zt
+\end{cases}
+\quad
+\begin{cases}
+    x = x_o' + l_xt\\
+    y = y_o' + l_yt\\
+    z = z_o' + l_zt
+\end{cases}$$
+
+And 
+
+$$ x_i = f\frac{x_o+l_xt}{z_o+l_zt} \quad x_i' = f\frac{x_o'+l_xt}{z_o'+l_zt} $$
+
+$$ y_i = f\frac{y_o+l_yt}{z_o+l_zt} \quad y_i' = f\frac{y_o'+l_yt}{z_o'+l_zt} $$
+
+Let $t \to \infty$, we have
+
+$$x_{vp} = f\frac{l_x}{l_z} \quad y_{vp} = f\frac{l_y}{l_z} $$
+
+We notice that $x_{vp}$ and $y_{vp}$ satisfies that
+
+$$\frac{A}{f}x_{vp}+\frac{B}{f}y_{vp}+C=0$$
+
+Therefore, the vanishing points on the image plane lie on the line
+
+$$\frac{A}{f}x+\frac{B}{f}y+C=0$$
+
