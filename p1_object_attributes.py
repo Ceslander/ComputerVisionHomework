@@ -6,17 +6,17 @@ import sys
 
 def binarize(gray_image, thresh_val):
     # TODO: 255 if intensity >= thresh_val else 0
-    binary_image = np.where(gray_image >= thresh_val, 255, 0)
+    binary_image = np.where(gray_image >= thresh_val, 1, 0)
     return binary_image
 
 
 def label(binary_image):
     # TODO
-   
+    
     length, width, channels = np.shape(binary_image)
-    parent = np.zeros((length, width))
-
+    
     # union-find set
+    parent = np.zeros((length, width))
     def index(i, j):
         # (i,j) to i*width+j.
         assert i < length and j < width, "Illegal index."
@@ -26,15 +26,18 @@ def label(binary_image):
         j = index % width
         i = round((index-j)/width)
         return i,j
-    def union_find_init(parent):
-        i = j = 0
-        while i < length:
-            parent[i][j] = index(i, j)
-            if j < width - 1:
-                j += 1
-            else:
-                i += 1
-                j = 0
+    # def union_find_init(parent):
+    #     i = j = 0
+    #     while i < length:
+    #         # if binary_image[i][j][0] == 0:
+    #         #     parent[i][j] = -1
+    
+    #         parent[i][j] = index(i, j)
+    #         if j < width - 1:
+    #             j += 1
+    #         else:
+    #             i += 1
+    #             j = 0
     def find(i, j):
         if parent[i][j] == index(i, j):
             return index(i,j)
@@ -43,7 +46,61 @@ def label(binary_image):
             return find(parent_i, parent_j)
     def merge(i, j, parent_i, parent_j):
         parent[i][j] = index(parent_i, parent_j)
+    
+    # union_find_init(parent)
 
+    # sequence labeling
+    i = j = 0
+    while i < length:
+        if binary_image[i][j][0] == 0:
+            parent[i][j] = -1
+        else:
+            if i > 0 and j > 0:
+                # if parent[i-1][j-1] != -1:
+                if binary_image[i-1][j-1][0] == 1:
+                    parent[i][j] = index(i-1,j-1)
+                # elif parent[i-1][j] == -1 and parent[i][j-1] != -1:
+                elif binary_image[i-1][j][0] == 0 and binary_image[i][j-1][0] == 1:
+                    parent[i][j] = index(i,j-1)
+                    # parent[i][j] = parent[i][j-1]
+                elif binary_image[i-1][j][0] == 1 and binary_image[i][j-1][0] == 0:
+                    parent[i][j] = index(i-1,j)
+                elif binary_image[i-1][j][0] == 1 and binary_image[i][j-1][0] == 1:
+                    merge(i-1,j,i,j-1)
+                    parent[i][j] = index(i-1,j)
+                else:
+                    assert parent[i-1][j][0] == -1 and parent[i][j-1][0] == -1, "Labeling error."
+                    parent[i][j] = index(i,j)
+            elif i == 0 and j > 0:
+                if binary_image[i][j-1][0] == 1:
+                    parent[i][j] = index(i,j-1)
+                else:
+                    parent[i][j] = index(i,j)
+            elif i > 0 and j == 0: 
+                if binary_image[i-1][j][0] == 1:
+                    parent[i][j] = index(i-1,j)
+                else:
+                    parent[i][j] = index(i,j)
+            elif i == 0 and j == 0:
+                parent[i][j] = index(i,j)
+
+        if j < width - 1:
+            j += 1
+        else:
+            i += 1
+            j = 0 
+
+    labeled_imag = np.zeros((length,width))    
+    i = j = 0
+
+    while i < length:
+        labeled_imag[i][j] = find(i,j)
+
+        if j < width - 1:
+            j += 1
+        else:
+            i += 1
+            j = 0         
     return labeled_imag
 
 
