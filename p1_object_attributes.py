@@ -6,12 +6,15 @@ import sys
 
 def binarize(gray_image, thresh_val):
     # TODO: 255 if intensity >= thresh_val else 0
-    binary_image = np.where(gray_image >= thresh_val, 1, 0)
+    binary_image = np.where(gray_image >= thresh_val, 255, 0)
     return binary_image
 
 
 def label(binary_image):
-    # TODO
+    # Return an image with labeled objects. Background is labeled -1.
+
+    # Convert 255 & 0 to 1 & 0.
+    binary_image = np.where(binary_image == 255, 1, 0)
     
     height, width, channels = np.shape(binary_image)
     
@@ -118,18 +121,36 @@ def get_attribute(labeled_image):
 
     max_object = 100    # Assume no more than `max_object` labels.
 
-    x_bar = np.zeros(max_object)
-    y_bar = np.zeros(max_object)
+    area = np.zeros(max_object)
+    xbar = np.zeros(max_object)
+    ybar = np.zeros(max_object)
 
     i = j = 0
     while i < height:
-        
-
+        if labeled_image[i][j] != -1:
+            current_label = labeled_image[i][j]
+            area[current_label] += 1
+            xbar[current_label] += j
+            ybar[current_label] += i
+            
         if j < width - 1:
             j += 1
         else:
             i += 1
             j = 0    
+
+    position_dict = {}
+
+    for i in range(max_object):
+        if area[i] == 0:
+            break
+        xbar[i] = xbar[i] / area[i]
+        ybar[i] = ybar[i] / area[i]
+        # position_dict[]
+                                    
+    num_objects = i     # objects are 0 to `num_objects`
+    attribute_list = []*num_objects
+    # NOTE: The origin is defined as the bottom left pixel of the
 
     return attribute_list
 
