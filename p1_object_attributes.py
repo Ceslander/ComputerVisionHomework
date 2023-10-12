@@ -139,17 +139,36 @@ def get_attribute(labeled_image):
             i += 1
             j = 0    
 
-    position_dict = {}
 
     for i in range(max_object):
         if area[i] == 0:
             break
         xbar[i] = xbar[i] / area[i]
         ybar[i] = ybar[i] / area[i]
-        # position_dict[]
-                                    
     num_objects = i     # objects are 0 to `num_objects`
-    attribute_list = []*num_objects
+
+    a = np.zeros(num_objects)
+    b = np.zeros(num_objects)
+    c = np.zeros(num_objects)
+    while i < height:
+        if labeled_image[i][j] != -1:
+            current_label = labeled_image[i][j]
+        a[current_label] += (i-xbar[current_label])^2
+        b[current_label] += 2*(i-xbar[current_label])*(j-ybar[current_label])
+        c[current_label] += (j-ybar[current_label])^2
+            
+        if j < width - 1:
+            j += 1
+        else:
+            i += 1
+            j = 0    
+
+    
+    attribute_list = [{} for _ in range(num_objects)]
+    for i in range(num_objects):
+        xbar[i] = height - xbar[i]
+        attribute_list[i]['position'] = {'x':xbar[i],'y':ybar[i]}
+
     # NOTE: The origin is defined as the bottom left pixel of the
 
     return attribute_list
