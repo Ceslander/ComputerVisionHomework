@@ -1,7 +1,8 @@
-# #!/usr/bin/env python3
+#!/usr/bin/env python3
 import cv2
 import numpy as np
 import sys
+import math
 
 
 def binarize(gray_image, thresh_val):
@@ -15,8 +16,7 @@ def label(binary_image):
 
     # Convert 255 & 0 to 1 & 0.
     binary_image = np.where(binary_image == 255, 1, 0)
-    
-    height, width, channels = np.shape(binary_image)
+    height, width = np.shape(binary_image)
     
     # union-find set
     parent = np.zeros((height, width))
@@ -26,21 +26,9 @@ def label(binary_image):
         return i*width+j
     def coordinate(index):
         # i*width+j to (i,j).
-        j = index % width
+        j = round(index % width)
         i = round((index-j)/width)
         return i,j
-    # def union_find_init(parent):
-    #     i = j = 0
-    #     while i < height:
-    #         # if binary_image[i][j][0] == 0:
-    #         #     parent[i][j] = -1
-    
-    #         parent[i][j] = index(i, j)
-    #         if j < width - 1:
-    #             j += 1
-    #         else:
-    #             i += 1
-    #             j = 0
     def find(i, j):
         if parent[i][j] == index(i, j) or parent[i][j] == -1:
             return parent[i][j]
@@ -55,32 +43,32 @@ def label(binary_image):
     # sequence labeling
     i = j = 0
     while i < height:
-        if binary_image[i][j][0] == 0:
+        if binary_image[i][j] == 0:
             parent[i][j] = -1
         else:
             if i > 0 and j > 0:
                 # if parent[i-1][j-1] != -1:
-                if binary_image[i-1][j-1][0] == 1:
+                if binary_image[i-1][j-1] == 1:
                     parent[i][j] = index(i-1,j-1)
                 # elif parent[i-1][j] == -1 and parent[i][j-1] != -1:
-                elif binary_image[i-1][j][0] == 0 and binary_image[i][j-1][0] == 1:
+                elif binary_image[i-1][j] == 0 and binary_image[i][j-1] == 1:
                     parent[i][j] = index(i,j-1)
                     # parent[i][j] = parent[i][j-1]
-                elif binary_image[i-1][j][0] == 1 and binary_image[i][j-1][0] == 0:
+                elif binary_image[i-1][j] == 1 and binary_image[i][j-1] == 0:
                     parent[i][j] = index(i-1,j)
-                elif binary_image[i-1][j][0] == 1 and binary_image[i][j-1][0] == 1:
+                elif binary_image[i-1][j] == 1 and binary_image[i][j-1] == 1:
                     merge(i-1,j,i,j-1)
                     parent[i][j] = index(i-1,j)
                 else:
                     assert parent[i-1][j] == -1 and parent[i][j-1] == -1, "Labeling error."
                     parent[i][j] = index(i,j)
             elif i == 0 and j > 0:
-                if binary_image[i][j-1][0] == 1:
+                if binary_image[i][j-1] == 1:
                     parent[i][j] = index(i,j-1)
                 else:
                     parent[i][j] = index(i,j)
             elif i > 0 and j == 0: 
-                if binary_image[i-1][j][0] == 1:
+                if binary_image[i-1][j] == 1:
                     parent[i][j] = index(i-1,j)
                 else:
                     parent[i][j] = index(i,j)
@@ -128,7 +116,7 @@ def get_attribute(labeled_image):
     i = j = 0
     while i < height:
         if labeled_image[i][j] != -1:
-            current_label = labeled_image[i][j]
+            current_label = round(labeled_image[i][j])
             area[current_label] += 1
             xbar[current_label] += j
             ybar[current_label] += i
@@ -145,14 +133,14 @@ def get_attribute(labeled_image):
             break
         xbar[i] = xbar[i] / area[i]
         ybar[i] = ybar[i] / area[i]
-    num_objects = i     # objects are 0 to `num_objects`
+    num_objects = i     # objects are 0 to `num_objects`-1
 
     a = np.zeros(num_objects)
     b = np.zeros(num_objects)
     c = np.zeros(num_objects)
     while i < height:
         if labeled_image[i][j] != -1:
-            current_label = labeled_image[i][j]
+            current_label = round(labeled_image[i][j])
         a[current_label] += (i-xbar[current_label])^2
         b[current_label] += 2*(i-xbar[current_label])*(j-ybar[current_label])
         c[current_label] += (j-ybar[current_label])^2
@@ -163,13 +151,19 @@ def get_attribute(labeled_image):
             i += 1
             j = 0    
 
-    
     attribute_list = [{} for _ in range(num_objects)]
     for i in range(num_objects):
+        # The origin is defined as the bottom left pixel of the
         xbar[i] = height - xbar[i]
         attribute_list[i]['position'] = {'x':xbar[i],'y':ybar[i]}
 
-    # NOTE: The origin is defined as the bottom left pixel of the
+        theta1 = 0.5 * math.atan(2*b[i]/(a[i]-c[i]))       
+        attribute_list[i]['orientation'] = theta1
+        theta2 = theta1 + math.pi/2
+        E_min = a[i]*(math.sin(theta1)^2) - b[i]*math.sin(theta1)*math.cos(theta1) + c[i]*(math.cos(theta1)^2)
+        E_max = a[i]*(math.sin(theta2)^2) - b[i]*math.sin(theta2)*math.cos(theta2) + c[i]*(math.cos(theta2)^2)
+        assert E_max != 0, "E_max == 0!"
+        attribute_list[i]['roundedness'] = E_min/E_max
 
     return attribute_list
 
