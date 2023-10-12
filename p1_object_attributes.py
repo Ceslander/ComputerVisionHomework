@@ -13,13 +13,13 @@ def binarize(gray_image, thresh_val):
 def label(binary_image):
     # TODO
     
-    length, width, channels = np.shape(binary_image)
+    height, width, channels = np.shape(binary_image)
     
     # union-find set
-    parent = np.zeros((length, width))
+    parent = np.zeros((height, width))
     def index(i, j):
         # (i,j) to i*width+j.
-        assert i < length and j < width, "Illegal index."
+        assert i < height and j < width, "Illegal index."
         return i*width+j
     def coordinate(index):
         # i*width+j to (i,j).
@@ -28,7 +28,7 @@ def label(binary_image):
         return i,j
     # def union_find_init(parent):
     #     i = j = 0
-    #     while i < length:
+    #     while i < height:
     #         # if binary_image[i][j][0] == 0:
     #         #     parent[i][j] = -1
     
@@ -39,8 +39,8 @@ def label(binary_image):
     #             i += 1
     #             j = 0
     def find(i, j):
-        if parent[i][j] == index(i, j):
-            return index(i,j)
+        if parent[i][j] == index(i, j) or parent[i][j] == -1:
+            return parent[i][j]
         else: 
             parent_i, parent_j = coordinate(parent[i][j])
             return find(parent_i, parent_j)
@@ -51,7 +51,7 @@ def label(binary_image):
 
     # sequence labeling
     i = j = 0
-    while i < length:
+    while i < height:
         if binary_image[i][j][0] == 0:
             parent[i][j] = -1
         else:
@@ -69,7 +69,7 @@ def label(binary_image):
                     merge(i-1,j,i,j-1)
                     parent[i][j] = index(i-1,j)
                 else:
-                    assert parent[i-1][j][0] == -1 and parent[i][j-1][0] == -1, "Labeling error."
+                    assert parent[i-1][j] == -1 and parent[i][j-1] == -1, "Labeling error."
                     parent[i][j] = index(i,j)
             elif i == 0 and j > 0:
                 if binary_image[i][j-1][0] == 1:
@@ -90,11 +90,19 @@ def label(binary_image):
             i += 1
             j = 0 
 
-    labeled_imag = np.zeros((length,width))    
+    labeled_imag = np.zeros((height,width))  
+    label_dict = {}     # parent-label reflection
+    count = 0           # number of labels
     i = j = 0
-
-    while i < length:
-        labeled_imag[i][j] = find(i,j)
+    while i < height:
+        current_parent = find(i,j)
+        if current_parent != -1:
+            if current_parent in label_dict:
+                labeled_imag[i][j] = label_dict[current_parent]
+            else:
+                label_dict[current_parent] = count
+                count += 1
+                labeled_imag[i][j] = label_dict[current_parent]
 
         if j < width - 1:
             j += 1
@@ -106,6 +114,23 @@ def label(binary_image):
 
 def get_attribute(labeled_image):
     # TODO
+    height, width = labeled_image.shape
+
+    max_object = 100    # Assume no more than `max_object` labels.
+
+    x_bar = np.zeros(max_object)
+    y_bar = np.zeros(max_object)
+
+    i = j = 0
+    while i < height:
+        
+
+        if j < width - 1:
+            j += 1
+        else:
+            i += 1
+            j = 0    
+
     return attribute_list
 
 
