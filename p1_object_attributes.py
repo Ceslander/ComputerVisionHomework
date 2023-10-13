@@ -35,8 +35,9 @@ def label(binary_image):
         else: 
             parent_i, parent_j = coordinate(parent[i][j])
             return find(parent_i, parent_j)
-    def merge(i, j, parent_i, parent_j):
-        parent[i][j] = index(parent_i, parent_j)
+    def merge(i1, j1, i2, j2):
+        root_i, root_j = coordinate(find(i1,j1))
+        parent[root_i][root_j] = find(i2,j2)
     
     # union_find_init(parent)
 
@@ -58,6 +59,7 @@ def label(binary_image):
                     parent[i][j] = index(i-1,j)
                 elif binary_image[i-1][j] == 1 and binary_image[i][j-1] == 1:
                     merge(i-1,j,i,j-1)
+                    # print("merge",i-1,j,"and",i,j-1)
                     parent[i][j] = index(i-1,j)
                 else:
                     assert parent[i-1][j] == -1 and parent[i][j-1] == -1, "Labeling error."
@@ -81,7 +83,7 @@ def label(binary_image):
             i += 1
             j = 0 
 
-    labeled_imag = np.zeros((height,width))  
+    labeled_imag = np.full((height,width),-1)  
     label_dict = {}     # parent-label reflection
     count = 0           # number of labels
     i = j = 0
@@ -183,7 +185,7 @@ def main(argv):
 
     binary_image = binarize(gray_image, thresh_val=thresh_val)
     labeled_image = label(binary_image)
-    attribute_list = get_attribute(labeled_image)
+    # attribute_list = get_attribute(labeled_image)
 
     cv2.imwrite('output/' + img_name + "_gray.png", gray_image)
     cv2.imwrite('output/' + img_name + "_binary.png", binary_image)
