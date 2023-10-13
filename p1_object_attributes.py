@@ -99,7 +99,12 @@ def label(binary_image):
             j += 1
         else:
             i += 1
-            j = 0         
+            j = 0    
+
+    # before: 0 1 2 ... count-1
+    # after:  255*(1/count) 255*(2/count) ... 255*(count/count)
+    labeled_imag = np.round((labeled_imag + 1) * 255 / count  )
+
     return labeled_imag
 
 
@@ -127,7 +132,6 @@ def get_attribute(labeled_image):
             i += 1
             j = 0    
 
-
     for i in range(max_object):
         if area[i] == 0:
             break
@@ -141,9 +145,9 @@ def get_attribute(labeled_image):
     while i < height:
         if labeled_image[i][j] != -1:
             current_label = round(labeled_image[i][j])
-        a[current_label] += (i-xbar[current_label])^2
+        a[current_label] += (i-xbar[current_label])**2
         b[current_label] += 2*(i-xbar[current_label])*(j-ybar[current_label])
-        c[current_label] += (j-ybar[current_label])^2
+        c[current_label] += (j-ybar[current_label])**2
             
         if j < width - 1:
             j += 1
@@ -157,11 +161,14 @@ def get_attribute(labeled_image):
         xbar[i] = height - xbar[i]
         attribute_list[i]['position'] = {'x':xbar[i],'y':ybar[i]}
 
-        theta1 = 0.5 * math.atan(2*b[i]/(a[i]-c[i]))       
+        if a[i] - c[i] != 0:
+            theta1 = 0.5 * math.atan(2*b[i]/(a[i]-c[i]))  
+        else:
+            theta1 = math.pi/2     
         attribute_list[i]['orientation'] = theta1
         theta2 = theta1 + math.pi/2
-        E_min = a[i]*(math.sin(theta1)^2) - b[i]*math.sin(theta1)*math.cos(theta1) + c[i]*(math.cos(theta1)^2)
-        E_max = a[i]*(math.sin(theta2)^2) - b[i]*math.sin(theta2)*math.cos(theta2) + c[i]*(math.cos(theta2)^2)
+        E_min = a[i]*(math.sin(theta1)**2) - b[i]*math.sin(theta1)*math.cos(theta1) + c[i]*(math.cos(theta1)**2)
+        E_max = a[i]*(math.sin(theta2)**2) - b[i]*math.sin(theta2)*math.cos(theta2) + c[i]*(math.cos(theta2)**2)
         assert E_max != 0, "E_max == 0!"
         attribute_list[i]['roundedness'] = E_min/E_max
 
@@ -181,6 +188,8 @@ def main(argv):
     cv2.imwrite('output/' + img_name + "_gray.png", gray_image)
     cv2.imwrite('output/' + img_name + "_binary.png", binary_image)
     cv2.imwrite('output/' + img_name + "_labeled.png", labeled_image)
+
+    print(len(attribute_list))
     print(attribute_list)
 
 
