@@ -114,11 +114,27 @@ def get_attribute(labeled_image):
     # TODO
     height, width = labeled_image.shape
 
-    max_object = 100    # Assume no more than `max_object` labels.
+    object_dict = {}
+    count = 0
+    i = j = 0
+    while i < height:
+        if labeled_image[i][j] == 0:
+            labeled_image[i][j] = -1
+        else:
+            if not labeled_image[i][j] in object_dict:
+                object_dict[labeled_image[i][j]] = count
+                count += 1
+            labeled_image[i][j] = object_dict[labeled_image[i][j]]
+        if j < width - 1:
+            j += 1
+        else:
+            i += 1
+            j = 0    
 
-    area = np.zeros(max_object)
-    xbar = np.zeros(max_object)
-    ybar = np.zeros(max_object)
+    print("count is", count)
+    area = np.zeros(count)
+    xbar = np.zeros(count)
+    ybar = np.zeros(count)
 
     i = j = 0
     while i < height:
@@ -134,16 +150,15 @@ def get_attribute(labeled_image):
             i += 1
             j = 0    
 
-    for i in range(max_object):
+    for i in range(count):
         if area[i] == 0:
             break
         xbar[i] = xbar[i] / area[i]
         ybar[i] = ybar[i] / area[i]
-    num_objects = i     # objects are 0 to `num_objects`-1
 
-    a = np.zeros(num_objects)
-    b = np.zeros(num_objects)
-    c = np.zeros(num_objects)
+    a = np.zeros(count)
+    b = np.zeros(count)
+    c = np.zeros(count)
     while i < height:
         if labeled_image[i][j] != -1:
             current_label = round(labeled_image[i][j])
@@ -157,8 +172,8 @@ def get_attribute(labeled_image):
             i += 1
             j = 0    
 
-    attribute_list = [{} for _ in range(num_objects)]
-    for i in range(num_objects):
+    attribute_list = [{} for _ in range(count)]
+    for i in range(count):
         # The origin is defined as the bottom left pixel of the
         xbar[i] = height - xbar[i]
         attribute_list[i]['position'] = {'x':xbar[i],'y':ybar[i]}
@@ -185,7 +200,7 @@ def main(argv):
 
     binary_image = binarize(gray_image, thresh_val=thresh_val)
     labeled_image = label(binary_image)
-    # attribute_list = get_attribute(labeled_image)
+    attribute_list = get_attribute(labeled_image)
 
     cv2.imwrite('output/' + img_name + "_gray.png", gray_image)
     cv2.imwrite('output/' + img_name + "_binary.png", binary_image)
