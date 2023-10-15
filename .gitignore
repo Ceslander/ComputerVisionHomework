@@ -6,3 +6,7 @@ tempCodeRunnerFile.py
 *test*.py
 *test*.*
 command.txt
+*.doc
+*.docx
+writing.pdf
+*report*.pdf

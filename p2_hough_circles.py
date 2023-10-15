@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+# #!/usr/bin/env python3
 import cv2
 import numpy as np
 
@@ -59,10 +59,11 @@ def hough_circles(edge_image, edge_thresh, radius_values):
     thresh_edge_image = np.where(edge_image >= edge_thresh, 255, 0)
     accum_array = np.zeros((len(radius_values), height, width), dtype=np.uint32)
     edge_pixels = np.argwhere(thresh_edge_image > 0)
-
+    
     for r_index, radius in enumerate(radius_values):
+        print(radius,"\n")
         for (x,y) in edge_pixels:
-            for theta in range(0,360):
+            for theta in range(0,360,5):
                 a = round(x-radius*np.cos(np.deg2rad(theta)))
                 b = round(y-radius*np.sin(np.deg2rad(theta)))
 
@@ -94,6 +95,7 @@ def find_circles(image, accum_array, radius_values, hough_thresh):
     circles = []
     centers = np.argwhere(accum_array >= hough_thresh)
     circle_image = image
+
     for (r_index, a, b) in centers:
         r = radius_values[r_index]
         cv2.circle(circle_image, (b,a), r, (0,255,0), thickness=2)
@@ -102,21 +104,24 @@ def find_circles(image, accum_array, radius_values, hough_thresh):
 
 def main():
     img_name = "coins"
-    edge_thresh = 50
+    edge_thresh = 105
+    radius_values = list(range(23,32))
     hough_thresh = 50
+    
     img = cv2.imread('data/' + img_name + '.png', cv2.IMREAD_COLOR)
     gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    binary_image = binarize(gray_image, thresh_val=thresh_val)
-    labeled_image = label(binary_image)
-    attribute_list = get_attribute(labeled_image)
+    edge_image = detect_edges(gray_image)
+    thresh_edge_image, accum_array = hough_circles(edge_image, edge_thresh, radius_values)
+    circles_list, circle_image = find_circles(img, accum_array, radius_values, hough_thresh)
 
     cv2.imwrite('output/' + img_name + "_gray.png", gray_image)
-    cv2.imwrite('output/' + img_name + "_binary.png", binary_image)
-    cv2.imwrite('output/' + img_name + "_labeled.png", labeled_image)
+    cv2.imwrite('output/' + img_name + "_edge.png", edge_image)
+    cv2.imwrite('output/' + img_name + "_thresh_edge.png", thresh_edge_image)
+    cv2.imwrite('output/' + img_name + "_circle.png", circle_image)
 
-    print(len(attribute_list))
-    print(attribute_list)
+    print(len(circles_list))
+    print(circles_list)
 
 
 if __name__ == '__main__':
