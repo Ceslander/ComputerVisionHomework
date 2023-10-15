@@ -61,7 +61,6 @@ def hough_circles(edge_image, edge_thresh, radius_values):
     edge_pixels = np.argwhere(thresh_edge_image > 0)
     
     for r_index, radius in enumerate(radius_values):
-        print(radius,"\n")
         for (x,y) in edge_pixels:
             for theta in range(0,360,5):
                 a = round(x-radius*np.cos(np.deg2rad(theta)))
@@ -97,7 +96,13 @@ def find_circles(image, accum_array, radius_values, hough_thresh):
     circle_image = image
 
     for (r_index, a, b) in centers:
+        exist = False
         r = radius_values[r_index]
+        for (rr, aa, bb) in circles:
+            if (aa-a)**2 + (bb-b)**2 < 2 and (rr - r)**2 < 2:
+                exist = True
+        if exist:
+            continue
         cv2.circle(circle_image, (b,a), r, (0,255,0), thickness=2)
         circles.append((r,a,b))
     return circles, circle_image
@@ -113,6 +118,7 @@ def main():
 
     edge_image = detect_edges(gray_image)
     thresh_edge_image, accum_array = hough_circles(edge_image, edge_thresh, radius_values)
+    # print(accum_array[:10,:10,:10])
     circles_list, circle_image = find_circles(img, accum_array, radius_values, hough_thresh)
 
     cv2.imwrite('output/' + img_name + "_gray.png", gray_image)

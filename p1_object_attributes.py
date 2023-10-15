@@ -6,7 +6,7 @@ import math
 
 
 def binarize(gray_image, thresh_val):
-    # TODO: 255 if intensity >= thresh_val else 0
+    # 255 if intensity >= thresh_val else 0
     binary_image = np.where(gray_image >= thresh_val, 255, 0)
     return binary_image
 
@@ -38,8 +38,6 @@ def label(binary_image):
     def merge(i1, j1, i2, j2):
         root_i, root_j = coordinate(find(i1,j1))
         parent[root_i][root_j] = find(i2,j2)
-    
-    # union_find_init(parent)
 
     # sequence labeling
     i = j = 0
@@ -48,18 +46,14 @@ def label(binary_image):
             parent[i][j] = -1
         else:
             if i > 0 and j > 0:
-                # if parent[i-1][j-1] != -1:
                 if binary_image[i-1][j-1] == 1:
                     parent[i][j] = index(i-1,j-1)
-                # elif parent[i-1][j] == -1 and parent[i][j-1] != -1:
                 elif binary_image[i-1][j] == 0 and binary_image[i][j-1] == 1:
                     parent[i][j] = index(i,j-1)
-                    # parent[i][j] = parent[i][j-1]
                 elif binary_image[i-1][j] == 1 and binary_image[i][j-1] == 0:
                     parent[i][j] = index(i-1,j)
                 elif binary_image[i-1][j] == 1 and binary_image[i][j-1] == 1:
                     merge(i-1,j,i,j-1)
-                    # print("merge",i-1,j,"and",i,j-1)
                     parent[i][j] = index(i-1,j)
                 else:
                     assert parent[i-1][j] == -1 and parent[i][j-1] == -1, "Labeling error."
@@ -111,10 +105,10 @@ def label(binary_image):
 
 
 def get_attribute(labeled_image):
-    # TODO
-    height, width = labeled_image.shape
 
+    height, width = labeled_image.shape
     object_dict = {}
+
     count = 0
     i = j = 0
     while i < height:
@@ -185,7 +179,7 @@ def get_attribute(labeled_image):
         attribute_list[i]['position'] = {'x':xbar[i],'y':ybar[i]}
 
         if a[i] - c[i] != 0:
-            theta1 = 0.5 * math.atan(2*b[i]/(a[i]-c[i]))  
+            theta1 = 0.5 * math.atan2(b[i], a[i]-c[i])  
         else:
             theta1 = math.pi/2     
         attribute_list[i]['orientation'] = theta1
