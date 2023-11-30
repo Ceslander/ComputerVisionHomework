@@ -2,7 +2,7 @@ __pycache__/
 .vscode/
 *submission*/
 
-tempCodeRunnerFile.py
+*temp*.py
 *test*.py
 *test*.*
 command.txt
@@ -11,3 +11,5 @@ command.txt
 writing.pdf
 *report*.pdf
 *submission*.*
+
+.gitignore
