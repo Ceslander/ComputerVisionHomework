@@ -8,6 +8,7 @@ The final programming results are
 
 - Camera Calibration Matrix:
 
+
     $$
     \begin{bmatrix}
     528.97964241 & 3.71885207 & 346.53669518 \\
@@ -16,7 +17,9 @@ The final programming results are
     \end{bmatrix}
     $$
 
+
 - Camera Calibration Matrix by OpenCV:
+
 
     $$
     \begin{bmatrix}
@@ -25,6 +28,7 @@ The final programming results are
     0 & 0 & 1 \\
     \end{bmatrix}
     $$
+
 
 - Reprojection Error:
 
